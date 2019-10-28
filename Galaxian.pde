@@ -191,18 +191,18 @@ void moveMonsters()
 // Detect collisions between sprites
 void processCollisions() 
 {
-  // Implemented in later phases
   // Detect collisions between Grid Monsters and Missile
   for (int idx = 0; idx < monsters.length; idx++) {
     Sprite monster = monsters[idx];
     if (!missile.isDead() && !monster.isDead() 
-      && monster != fallingMonster 
-      && missile.bb_collision(monster)) {
+              && monster != fallingMonster 
+              && missile.bb_collision(monster)) {
       //score += gridMonsterPts;
       monsterHit(monster);
       missile.setDead(true);
     }
   }
+
 }
 
 void monsterHit(Sprite monster) 
