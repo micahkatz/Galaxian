@@ -5,11 +5,15 @@ import sprites.maths.*;
 import sprites.*;
 
 // The dimensions of the monster grid.
-int monsterCols = 10;
+int monsterCols = 6;
 int monsterRows = 5; 
 
 long mmCounter = 0;
 int mmStep = 1; 
+
+//Missiles variables
+int missileSpeed = 500;
+double upRadians = 4.71238898;
 
 Sprite ship, missile, fallingMonster, explosion, gameOverSprite;
 Sprite monsters[] = new Sprite[monsterCols * monsterRows];
@@ -93,12 +97,49 @@ Sprite buildMonster()
   return monster;
 }
 
+Sprite buildMissile()
+{
+  // The Missile
+  Sprite sprite  = new Sprite(this, "rocket.png", 10);
+  sprite.setScale(.5);
+  sprite.setDead(true); // Initially hide the missile
+  return sprite;
+}
+
+void stopMissile() 
+{
+  missile.setSpeed(0, upRadians);
+  missile.setDead(true);
+}
+
+// Pick the first monster on the grid that is not dead.
+// Return null if they are all dead.
+Sprite pickNonDeadMonster() 
+{
+  for (int idx = 0; idx < monsters.length; idx++) {
+    Sprite monster = monsters[idx];
+    if (!monster.isDead()) {
+      return monster;
+    }
+  }
+  return null;
+}
+
 // Executed before draw() is called 
 public void pre() 
 {    
   checkKeys();
   processCollisions();
   moveMonsters();
+
+  // If missile flies off screen
+  if (!missile.isDead() && ! missile.isOnScreem()) {
+    stopMissile();
+  }
+  if (pickNonDeadMonster() == null) {
+    resetMonsters();
+  }
+
 
   S4P.updateSprites(stopWatch.getElapsedTime());
 } 
@@ -115,6 +156,15 @@ void checkKeys()
     if (kbController.isSpace()) {
       //fire missile added in following phases
     }
+  }
+}
+
+void fireMissile() 
+{
+  if (missile.isDead() && !ship.isDead()) {
+    missile.setPos(ship.getPos());
+    missile.setSpeed(missileSpeed, upRadians);
+    missile.setDead(false);
   }
 }
 
@@ -135,7 +185,17 @@ void moveMonsters()
 // Detect collisions between sprites
 void processCollisions() 
 {
-  // Implemented in later phases
+  // Detect collisions between Grid Monsters and Missile
+  for (int idx = 0; idx < monsters.length; idx++) {
+    Sprite monster = monsters[idx];
+    if (!missile.isDead() && !monster.isDead() 
+      && monster != fallingMonster 
+      && missile.bb_collision(monster)) {
+      //score += gridMonsterPts;
+      monsterHit(monster);
+      missile.setDead(true);
+    }
+  }
 }
 
 void monsterHit(Sprite monster) 
