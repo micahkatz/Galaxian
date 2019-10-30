@@ -44,6 +44,8 @@ void buildSprites()
 
   // The Grid Monsters 
   buildMonsterGrid();
+  
+  missile = buildMissile();
 }
 
 Sprite buildShip()
