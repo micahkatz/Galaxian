@@ -45,6 +45,7 @@ void buildSprites()
   // The Grid Monsters 
   buildMonsterGrid();
   
+  // The Missles
   missile = buildMissile();
 }
 
@@ -156,7 +157,7 @@ void checkKeys()
       ship.setX(ship.getX()+10);
     }
     if (kbController.isSpace()) {
-      //fire missile added in following phases
+      fireMissile();
     }
   }
 }
