@@ -10,14 +10,8 @@ class KeyboardController {
 
   KeyboardController(PApplet applet) {
     controllIO = ControlIO.getInstance(applet);
-      
-    
-    //keyboard = controllIO.getDevice("Keyboard"); // FOR WINDOWS
-    keyboard = controllIO.getDevice("Apple Internal Keyboard / Trackpad"); // FOR MAC
-    
-    //spaceBtn = keyboard.getButton("Space"); // FOR WINDOWS
-    spaceBtn = keyboard.getButton(" "); // FOR MAC
-    
+    keyboard = controllIO.getDevice("Keyboard");
+    spaceBtn = keyboard.getButton("Space");   
     leftArrow = keyboard.getButton("Left");   
     rightArrow = keyboard.getButton("Right");
     downArrow = keyboard.getButton("Down");
