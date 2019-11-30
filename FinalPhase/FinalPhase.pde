@@ -24,8 +24,8 @@ double fmSpeed = 150;
 
 boolean gameOver = false;
 int score = 0;
-int fallingMonsterPts = 20;
-int gridMonsterPts = 10;
+int fallingMonsterPts = 2000;
+int gridMonsterPts = 1000;
 
 Sprite ship, missile, fallingMonster, explosion, gameOverSprite;
 Sprite monsters[] = new Sprite[monsterCols * monsterRows];
@@ -55,6 +55,9 @@ void setup()
   // Game Over Sprite
   gameOverSprite = new Sprite(this, "gameOver.png", 100);
   gameOverSprite.setDead(true);
+  
+  
+  
 }
 
 void buildSprites()
@@ -74,8 +77,7 @@ Sprite buildShip()
   Sprite ship = new Sprite(this, "ship.png", 50);
   ship.setXY(width/2, height - 30);
   ship.setVelXY(0.0f, 0);
-  ship.setScale(.75);
-  ship.setRot(3.14159);
+  ship.setScale(2);
   // Domain keeps the moving sprite withing specific screen area 
   ship.setDomain(0, height-ship.getHeight(), width, height, Sprite.HALT);
 
@@ -132,7 +134,7 @@ void replaceFallingMonster()
 Sprite buildMonster() 
 {
   Sprite monster = new Sprite(this, "monster.png", 30);
-  monster.setScale(.5);
+  monster.setScale(1.25);
   monster.setDead(false);
 
   return monster;
@@ -196,7 +198,7 @@ void checkKeys()
   if (focused) {
     ship.setX(mouseX);
              
-    if (kbController.isSpace()) {
+    if (mousePressed && mouseButton == LEFT) {
       fireMissile();
     }
   }
@@ -208,6 +210,7 @@ void fireMissile()
     missile.setPos(ship.getPos());
     missile.setSpeed(missileSpeed, upRadians);
     missile.setDead(false);
+    soundPlayer.playPop();
   }
 }
 
@@ -296,16 +299,32 @@ void drawScore()
 
 void drawGameOver() 
 {
+  soundPlayer.playGameOver();
   gameOverSprite.setXY(width/2, height/2);
   gameOverSprite.setDead(false);
 }
 
+int gameOverCount = 0;
+
 public void draw() 
 {
+
   background(0);
   drawScore();
   S4P.drawSprites();
+  
   if(gameOver)  {
-    drawGameOver();
+    if(gameOverCount == 0){
+    
+      soundPlayer.stopBgMusic();
+      drawGameOver();
+      gameOverCount ++;
+    
+    }
+  }
+  else {
+    
+    soundPlayer.playBgMusic();
+  
   }
 }
