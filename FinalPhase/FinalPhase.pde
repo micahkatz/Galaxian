@@ -34,7 +34,7 @@ int lives = 3;
 int fallingMonsterPts = 200;
 int gridMonsterPts = 100;
 
-Sprite ship, missile, fallingMonster, explosion, gameOverSprite;
+Sprite ship, missile1, missile2, fallingMonster, explosion, gameOverSprite;
 Sprite monsters[] = new Sprite[monsterCols * monsterRows];
 
 KeyboardController kbController;
@@ -78,7 +78,8 @@ void buildSprites()
   buildMonsterGrid();
 
   // The Missles
-  missile = buildMissile();
+  missile1 = buildMissile();
+  missile2 = buildMissile();
 }
 
 Sprite buildShip()
@@ -86,7 +87,7 @@ Sprite buildShip()
   Sprite ship = new Sprite(this, "ship.png", 50);
   ship.setXY(width/2, height - 30);
   ship.setVelXY(0.0f, 0);
-  ship.setScale(2);
+  ship.setScale(1);
   // Domain keeps the moving sprite withing specific screen area 
   ship.setDomain(0, height-ship.getHeight(), width, height, Sprite.HALT);
 
@@ -160,8 +161,10 @@ Sprite buildMissile()
 
 void stopMissile() 
 {
-  missile.setSpeed(0, upRadians);
-  missile.setDead(true);
+  missile1.setSpeed(0, upRadians);
+  missile1.setDead(true);
+  missile2.setSpeed(0, upRadians);
+  missile2.setDead(true);
 }
 
 // Pick the first monster on the grid that is not dead.
@@ -185,7 +188,7 @@ public void pre()
   moveMonsters();
 
   // If missile flies off screen
-  if (!missile.isDead() && ! missile.isOnScreem()) {
+  if (!missile1.isDead() && ! missile1.isOnScreem() || !missile2.isDead() && ! missile2.isOnScreem()) {
     stopMissile();
   }
   if (pickNonDeadMonster() == null) {
@@ -220,10 +223,13 @@ void checkKeys()
 
 void fireMissile() 
 {
-  if (missile.isDead() && !ship.isDead()) {
-    missile.setPos(ship.getPos());
-    missile.setSpeed(missileSpeed, upRadians);
-    missile.setDead(false);
+  if (missile1.isDead() && missile2.isDead() && !ship.isDead()) {
+    missile1.setXY(ship.getX()-10, ship.getY());
+    missile2.setXY(ship.getX()+10, ship.getY());
+    missile1.setSpeed(missileSpeed, upRadians);
+    missile2.setSpeed(missileSpeed, upRadians);
+    missile1.setDead(false);
+    missile2.setDead(false);
     soundPlayer.playPop();
   }
 }
@@ -270,21 +276,35 @@ void processCollisions()
   // Detect collisions between Grid Monsters and Missile
   for (int idx = 0; idx < monsters.length; idx++) {
     Sprite monster = monsters[idx];
-    if (!missile.isDead() && !monster.isDead() 
+    if (!missile1.isDead() && !monster.isDead() 
       && monster != fallingMonster 
-      && missile.bb_collision(monster)) {
+      && missile1.bb_collision(monster)) {
       score += gridMonsterPts;
       monsterHit(monster);
-      missile.setDead(true);
+      missile1.setDead(true);
+    }
+    if (!missile2.isDead() && !monster.isDead() 
+      && monster != fallingMonster 
+      && missile2.bb_collision(monster)) {
+      score += gridMonsterPts;
+      monsterHit(monster);
+      missile2.setDead(true);
     }
   }
 
   // Between Falling Monster and Missile
-  if (!missile.isDead() && fallingMonster != null 
-    && missile.cc_collision(fallingMonster)) {
+  if (!missile1.isDead() && fallingMonster != null 
+    && missile1.cc_collision(fallingMonster)) {
     score += fallingMonsterPts;
     monsterHit(fallingMonster); 
-    missile.setDead(true);
+    missile1.setDead(true);
+    fallingMonster = null;
+  }
+  if (!missile2.isDead() && fallingMonster != null 
+    && missile2.cc_collision(fallingMonster)) {
+    score += fallingMonsterPts;
+    monsterHit(fallingMonster); 
+    missile2.setDead(true);
     fallingMonster = null;
   }
 
