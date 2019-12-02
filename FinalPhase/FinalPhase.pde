@@ -4,33 +4,40 @@ import sprites.utils.*;
 import sprites.maths.*;
 import sprites.*;
 
+//Wave System
+int wave = 0;
+boolean displayWave = false;
+int timer;
+int interval = 3;
+
 //Background setup
 PImage img;
 int y = 1;
 int y2 = 1;
 
 // The dimensions of the monster grid.
-int monsterCols = 6;
+int monsterCols = 8;
 int monsterRows = 5; 
 
 long mmCounter = 0;
 int mmStep = 1; 
 
 //Missiles variables
-int missileSpeed = 500;
+int missileSpeed = 500 - 2*wave;
 double upRadians = 4.71238898;
 
 // Lower difficulty values introduce a more 
 // random falling monster descent. 
-int difficulty = 100;
+int difficulty = 100 - wave;
 double fmRightAngle = 0.3490; // 20 degrees
 double fmLeftAngle = 2.79253; // 160 degrees
-double fmSpeed = 150;
+double fmSpeed = 150 + int(random(2))*wave;
 
 boolean gameOver = false;
 boolean bonusGiven = false;
 int score = 0;
 int lives = 3;
+int bossHealth = 10 + wave;
 int fallingMonsterPts = 200;
 int gridMonsterPts = 100;
 
@@ -64,9 +71,6 @@ void setup()
   // Game Over Sprite
   gameOverSprite = new Sprite(this, "gameOver.png", 100);
   gameOverSprite.setDead(true);
-  
-  
-  
 }
 
 void buildSprites()
@@ -191,7 +195,9 @@ public void pre()
   if (!missile1.isDead() && ! missile1.isOnScreem() || !missile2.isDead() && ! missile2.isOnScreem()) {
     stopMissile();
   }
+
   if (pickNonDeadMonster() == null) {
+    wave++;
     resetMonsters();
   }
 
@@ -214,7 +220,7 @@ void checkKeys()
 {
   if (focused) {
     ship.setX(mouseX);
-             
+
     if (mousePressed && mouseButton == LEFT) {
       fireMissile();
     }
@@ -314,7 +320,7 @@ void processCollisions()
     monsterHit(fallingMonster);
     fallingMonster = null;
     lives--;
-    if(lives == 0)
+    if (lives == 0)
     {
       explodeShip();
       gameOver = true;
@@ -361,23 +367,20 @@ public void draw()
   {
     copy(img, 0, 0, width, img.height, 0, y2, width, img.height);
   }
-  
+
   drawScore();
   drawLives();
   S4P.drawSprites();
-  
-  if(gameOver)  {
-    if(gameOverCount == 0){
-    
+
+  if (gameOver) {
+    if (gameOverCount == 0) {
+
       soundPlayer.stopBgMusic();
       drawGameOver();
       gameOverCount ++;
-    
     }
-  }
-  else {
-    
+  } else {
+
     soundPlayer.playBgMusic();
-  
   }
 }
