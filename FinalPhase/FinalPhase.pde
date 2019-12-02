@@ -23,6 +23,7 @@ double fmLeftAngle = 2.79253; // 160 degrees
 double fmSpeed = 150;
 
 boolean gameOver = false;
+boolean bonusGiven = false;
 int score = 0;
 int lives = 3;
 int fallingMonsterPts = 200;
@@ -190,9 +191,10 @@ public void pre()
   }
 
   // if score reaches 10000, a bonus lives is given.
-  if (score == 10000 && lives < 4)
+  if (score == 1000 && bonusGiven == false)
   {
     lives++;
+    bonusGiven = true;
   }
 
   S4P.updateSprites(stopWatch.getElapsedTime());
