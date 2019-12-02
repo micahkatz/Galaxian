@@ -24,8 +24,9 @@ double fmSpeed = 150;
 
 boolean gameOver = false;
 int score = 0;
-int fallingMonsterPts = 2000;
-int gridMonsterPts = 1000;
+int lives = 3;
+int fallingMonsterPts = 200;
+int gridMonsterPts = 100;
 
 Sprite ship, missile, fallingMonster, explosion, gameOverSprite;
 Sprite monsters[] = new Sprite[monsterCols * monsterRows];
@@ -188,7 +189,11 @@ public void pre()
     replaceFallingMonster();
   }
 
-
+  // if score reaches 10000, a bonus lives is given.
+  if (score == 10000 && lives < 4)
+  {
+    lives++;
+  }
 
   S4P.updateSprites(stopWatch.getElapsedTime());
 } 
@@ -277,10 +282,14 @@ void processCollisions()
   // Between Falling Monster and Ship
   if (fallingMonster!= null && !ship.isDead() 
     && fallingMonster.bb_collision(ship)) {
-    explodeShip();
     monsterHit(fallingMonster);
     fallingMonster = null;
-    gameOver = true;
+    lives--;
+    if(lives == 0)
+    {
+      explodeShip();
+      gameOver = true;
+    }
   }
 }
 
@@ -292,9 +301,16 @@ void monsterHit(Sprite monster)
 
 void drawScore() 
 {
-  textSize(32);
+  textSize(20);
   String msg = " Score: " + score;
   text(msg, 10, 30);
+}
+
+void drawLives()
+{
+  textSize(20);
+  String msg = " Lives: " + lives;
+  text(msg, 10, 55);
 }
 
 void drawGameOver() 
@@ -311,6 +327,7 @@ public void draw()
 
   background(0);
   drawScore();
+  drawLives();
   S4P.drawSprites();
   
   if(gameOver)  {
