@@ -4,6 +4,11 @@ import sprites.utils.*;
 import sprites.maths.*;
 import sprites.*;
 
+//Background setup
+PImage img;
+int y = 1;
+int y2 = 1;
+
 // The dimensions of the monster grid.
 int monsterCols = 6;
 int monsterRows = 5; 
@@ -45,7 +50,9 @@ void setup()
   // by Processing before the draw() function. 
   registerMethod("pre", this);
 
+  img = loadImage("Background.png");
   size(700, 500);
+  smooth();
   S4P.messagesEnabled(true);
   buildSprites();
   resetMonsters();
@@ -191,7 +198,7 @@ public void pre()
   }
 
   // if score reaches 10000, a bonus lives is given.
-  if (score == 1000 && bonusGiven == false)
+  if (score == 10000 && bonusGiven == false)
   {
     lives++;
     bonusGiven = true;
@@ -327,7 +334,14 @@ int gameOverCount = 0;
 public void draw() 
 {
 
-  background(0);
+  y = -frameCount % img.height;
+  copy(img, 0, y, width, img.height, 0, 0, width, img.height);
+  y2 = -img.height - y;
+  if (y2 < height)
+  {
+    copy(img, 0, 0, width, img.height, 0, y2, width, img.height);
+  }
+  
   drawScore();
   drawLives();
   S4P.drawSprites();
